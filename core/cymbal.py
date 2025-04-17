@@ -1,4 +1,5 @@
 import core.generators as generators
+import core.effects as effects
 import numpy as np
 import pygame
 
@@ -19,7 +20,8 @@ class Cymbal:
                                           self.amp * max_volume,
                                           self.freq,
                                           self.decay,
-                                          self.attack).astype(np.int16)
+                                          self.attack)
+        inst = effects.hard_clip(inst, max_volume).astype(np.int16)
         return inst
 
 
@@ -30,7 +32,8 @@ class Cymbal:
                                           self.amp * max_volume,
                                           self.freq,
                                           self.decay,
-                                          self.attack).astype(np.int16)
+                                          self.attack)
+        inst = effects.hard_clip(inst, max_volume).astype(np.int16)
         inst = np.repeat(inst.reshape(self.sample_rate, 1), 2, axis=1)
         inst = pygame.sndarray.make_sound(inst)
 

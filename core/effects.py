@@ -50,11 +50,5 @@ def low_pass_filter(sound, freq, sample_rate):
     normal_cutoff = freq / (sample_rate * 0.5)
     b, a = signal.butter(2, normal_cutoff, 'low')
     sound = signal.filtfilt(b, a, sound)
-    return sound
-
-
-def high_pass_filter(sound, freq, sample_rate):
-    normal_cutoff = freq / (sample_rate * 0.5)
-    b, a = signal.butter(2, normal_cutoff, 'high')
-    sound = signal.filtfilt(b, a, sound)
+    sound = np.clip(sound, -32767, 32767)
     return sound

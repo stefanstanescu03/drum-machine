@@ -1,7 +1,7 @@
 import core.generators as generators
 import numpy as np
 import pygame
-import core.effects as efx
+import core.effects as effects
 
 
 class Snare:
@@ -13,6 +13,8 @@ class Snare:
         self.decay = 30
         self.attack = 50
 
+        self.cutoff = 20000
+
     def get_raw(self):
         max_volume = 32767
 
@@ -21,7 +23,10 @@ class Snare:
                                          self.amp * max_volume,
                                          self.freq,
                                          self.decay,
-                                         self.attack).astype(np.int16)
+                                         self.attack)
+        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
+        inst = inst.astype(np.int16)
         return inst
 
     def get_sound(self):
@@ -32,7 +37,10 @@ class Snare:
                                          self.amp * max_volume,
                                          self.freq,
                                          self.decay,
-                                         self.attack).astype(np.int16)
+                                         self.attack)
+        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
+        inst = inst.astype(np.int16)
         inst = np.repeat(inst.reshape(self.sample_rate, 1), 2, axis=1)
         inst = pygame.sndarray.make_sound(inst)
 

@@ -27,6 +27,9 @@ def main():
     pygame.mixer.pre_init(44100, -16, 8, 1024)
     pygame.mixer.init()
 
+    icon = pygame.image.load('icon.png')
+    pygame.display.set_icon(icon)
+
     screen = pygame.display.set_mode((1300, 600))
     pygame.display.set_caption("Drum Machine")
 
@@ -46,10 +49,13 @@ def main():
     bpm_dial = widgets.dial.Dial(260, 425, 30, 0.5, 20, "Tempo", 15)
 
     kick = core.kick.Kick(44100, 1)
+    kick.amp = 1
     kick_attack_knob = widgets.dial.Dial(115, 120, 20, 0.1, 10, "Attack", 10)
     kick_decay_knob = widgets.dial.Dial(170, 120, 20, 0.1, 10, "Decay", 10)
     kick_time_knob = widgets.dial.Dial(115, 180, 20, 0.04, 5, "Time", 10)
     kick_freq_knob = widgets.dial.Dial(170, 180, 20, 0.2, 30, "Tone", 10)
+    kick_level_knob = widgets.dial.Dial(115, 240, 20, 0.02, 0.5, "Level", 10)
+    kick_cutoff_knob = widgets.dial.Dial(170, 240, 20, 55.5, 20, "Cutoff", 10)
     kick_shape_button = widgets.shape_button.ShapeButton(210, 110, 20, 20, "Shape")
     kick_display = widgets.sound_display.SoundDisplay(kick, "Bass Drum", 95, 50, 150, 30)
 
@@ -57,20 +63,30 @@ def main():
     snare_attack_knob = widgets.dial.Dial(320, 120, 20, 0.1, 10, "Attack", 10)
     snare_decay_knob = widgets.dial.Dial(375, 120, 20, 0.1, 10, "Decay", 10)
     snare_freq_knob = widgets.dial.Dial(320, 180, 20, 0.3, 80, "Tone", 10)
+    snare_level_knob = widgets.dial.Dial(375, 180, 20, 0.02, 0.5, "Level", 10)
+    snare_cutoff_knob = widgets.dial.Dial(430, 120, 20, 55.5, 20, "Cutoff", 10)
     snare_display = widgets.sound_display.SoundDisplay(snare, "Snare Drum", 300, 50, 150, 30)
 
     hh = core.cymbal.Cymbal(44100, 1)
     hh_attack_knob = widgets.dial.Dial(525, 120, 20, 0.1, 10, "Attack", 10)
     hh_decay_knob = widgets.dial.Dial(580, 120, 20, 0.04, 15, "Decay", 10)
     hh_freq_knob = widgets.dial.Dial(525, 180, 20, 11, 2000, "Tone", 10)
+    hh_level_knob = widgets.dial.Dial(580, 180, 20, 0.02, 0.5, "Level", 10)
     hh_display = widgets.sound_display.SoundDisplay(hh, "Hi Hat", 505, 50, 150, 30)
 
     cymbal = core.cymbal.Cymbal(44100, 1)
     cymbal.decay = 10
     cymbal.attack = 30
+    cymbal_attack_knob = widgets.dial.Dial(730, 120, 20, 0.1, 10, "Attack", 10)
+    cymbal_decay_knob = widgets.dial.Dial(785, 120, 20, 0.04, 5, "Decay", 10)
+    cymbal_freq_knob = widgets.dial.Dial(730, 180, 20, 11, 2000, "Tone", 10)
+    cymbal_level_knob = widgets.dial.Dial(785, 180, 20, 0.02, 0.5, "Level", 10)
     cymbal_display = widgets.sound_display.SoundDisplay(cymbal, "Cymbal", 710, 50, 150, 30)
 
     clap = core.clap.Clap(44100, 1)
+    clap_decay_knob = widgets.dial.Dial(935, 120, 20, 0.1, 10, "Decay", 10)
+    clap_delay_knob = widgets.dial.Dial(990, 120, 20, 0.12, 5, "Delay", 10)
+    clap_level_knob = widgets.dial.Dial(935, 180, 20, 0.005, 0.1, "Level", 10)
     clap_display = widgets.sound_display.SoundDisplay(clap, "Clap", 915, 50, 150, 30)
 
     kick_display.change_status()
@@ -134,6 +150,14 @@ def main():
                     kick_freq_knob.dragging = True
                     kick_freq_knob.prev_angle = kick_freq_knob.calculate_angle(event.pos[0], event.pos[1])
 
+                if kick_level_knob.check_clicked(event.pos):
+                    kick_level_knob.dragging = True
+                    kick_level_knob.prev_angle = kick_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if kick_cutoff_knob.check_clicked(event.pos):
+                    kick_cutoff_knob.dragging = True
+                    kick_cutoff_knob.prev_angle = kick_cutoff_knob.calculate_angle(event.pos[0], event.pos[1])
+
                 if snare_attack_knob.check_clicked(event.pos):
                     snare_attack_knob.dragging = True
                     snare_attack_knob.prev_angle = snare_attack_knob.calculate_angle(event.pos[0], event.pos[1])
@@ -146,6 +170,14 @@ def main():
                     snare_freq_knob.dragging = True
                     snare_freq_knob.prev_angle = snare_freq_knob.calculate_angle(event.pos[0], event.pos[1])
 
+                if snare_level_knob.check_clicked(event.pos):
+                    snare_level_knob.dragging = True
+                    snare_level_knob.prev_angle = snare_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if snare_cutoff_knob.check_clicked(event.pos):
+                    snare_cutoff_knob.dragging = True
+                    snare_cutoff_knob.prev_angle = snare_cutoff_knob.calculate_angle(event.pos[0], event.pos[1])
+
                 if hh_attack_knob.check_clicked(event.pos):
                     hh_attack_knob.dragging = True
                     hh_attack_knob.prev_angle = hh_attack_knob.calculate_angle(event.pos[0], event.pos[1])
@@ -157,6 +189,38 @@ def main():
                 if hh_freq_knob.check_clicked(event.pos):
                     hh_freq_knob.dragging = True
                     hh_freq_knob.prev_angle = hh_freq_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if hh_level_knob.check_clicked(event.pos):
+                    hh_level_knob.dragging = True
+                    hh_level_knob.prev_angle = hh_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if cymbal_attack_knob.check_clicked(event.pos):
+                    cymbal_attack_knob.dragging = True
+                    cymbal_attack_knob.prev_angle = cymbal_attack_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if cymbal_decay_knob.check_clicked(event.pos):
+                    cymbal_decay_knob.dragging = True
+                    cymbal_decay_knob.prev_angle = cymbal_decay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if cymbal_freq_knob.check_clicked(event.pos):
+                    cymbal_freq_knob.dragging = True
+                    cymbal_freq_knob.prev_angle = cymbal_freq_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if cymbal_level_knob.check_clicked(event.pos):
+                    cymbal_level_knob.dragging = True
+                    cymbal_level_knob.prev_angle = cymbal_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if clap_decay_knob.check_clicked(event.pos):
+                    clap_decay_knob.dragging = True
+                    clap_decay_knob.prev_angle = clap_decay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if clap_delay_knob.check_clicked(event.pos):
+                    clap_delay_knob.dragging = True
+                    clap_delay_knob.prev_angle = clap_delay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if clap_level_knob.check_clicked(event.pos):
+                    clap_level_knob.dragging = True
+                    clap_level_knob.prev_angle = clap_level_knob.calculate_angle(event.pos[0], event.pos[1])
 
                 if kick_display.check_clicked(event.pos):
                     kick_display.play_sample()
@@ -240,14 +304,28 @@ def main():
                 kick_decay_knob.dragging = False
                 kick_time_knob.dragging = False
                 kick_freq_knob.dragging = False
+                kick_level_knob.dragging = False
+                kick_cutoff_knob.dragging = False
 
                 snare_attack_knob.dragging = False
                 snare_decay_knob.dragging = False
                 snare_freq_knob.dragging = False
+                snare_level_knob.dragging = False
+                snare_cutoff_knob.dragging = False
 
                 hh_attack_knob.dragging = False
                 hh_decay_knob.dragging = False
                 hh_freq_knob.dragging = False
+                hh_level_knob.dragging = False
+
+                cymbal_attack_knob.dragging = False
+                cymbal_decay_knob.dragging = False
+                cymbal_freq_knob.dragging = False
+                cymbal_level_knob.dragging = False
+
+                clap_decay_knob.dragging = False
+                clap_delay_knob.dragging = False
+                clap_level_knob.dragging = False
 
         if bpm_dial.dragging:
             bpm_dial.drag()
@@ -271,6 +349,14 @@ def main():
             kick_freq_knob.drag()
             kick.freq = kick_freq_knob.get_value()
 
+        if kick_level_knob.dragging:
+            kick_level_knob.drag()
+            kick.amp = kick_level_knob.get_value()
+
+        if kick_cutoff_knob.dragging:
+            kick_cutoff_knob.drag()
+            kick.cutoff = kick_cutoff_knob.get_value()
+
         if snare_attack_knob.dragging:
             snare_attack_knob.drag()
             snare.attack = snare_attack_knob.get_value()
@@ -283,6 +369,14 @@ def main():
             snare_freq_knob.drag()
             snare.freq = snare_freq_knob.get_value()
 
+        if snare_level_knob.dragging:
+            snare_level_knob.drag()
+            snare.amp = snare_level_knob.get_value()
+
+        if snare_cutoff_knob.dragging:
+            snare_cutoff_knob.drag()
+            snare.cutoff = snare_cutoff_knob.get_value()
+
         if hh_attack_knob.dragging:
             hh_attack_knob.drag()
             hh.attack = hh_attack_knob.get_value()
@@ -294,6 +388,38 @@ def main():
         if hh_freq_knob.dragging:
             hh_freq_knob.drag()
             hh.freq = hh_freq_knob.get_value()
+
+        if hh_level_knob.dragging:
+            hh_level_knob.drag()
+            hh.amp = hh_level_knob.get_value()
+
+        if cymbal_attack_knob.dragging:
+            cymbal_attack_knob.drag()
+            cymbal.attack = cymbal_attack_knob.get_value()
+
+        if cymbal_decay_knob.dragging:
+            cymbal_decay_knob.drag()
+            cymbal.decay = cymbal_decay_knob.get_value()
+
+        if cymbal_freq_knob.dragging:
+            cymbal_freq_knob.drag()
+            cymbal.freq = cymbal_freq_knob.get_value()
+
+        if cymbal_level_knob.dragging:
+            cymbal_level_knob.drag()
+            cymbal.amp = cymbal_level_knob.get_value()
+
+        if clap_decay_knob.dragging:
+            clap_decay_knob.drag()
+            clap.decay = clap_decay_knob.get_value()
+
+        if clap_delay_knob.dragging:
+            clap_delay_knob.drag()
+            clap.delay_interval = clap_delay_knob.get_value()
+
+        if clap_level_knob.dragging:
+            clap_level_knob.drag()
+            clap.amp = clap_level_knob.get_value()
 
         screen.fill(background_color)
 
@@ -313,15 +439,29 @@ def main():
         kick_decay_knob.draw(screen)
         kick_time_knob.draw(screen)
         kick_freq_knob.draw(screen)
+        kick_level_knob.draw(screen)
         kick_shape_button.draw(screen)
+        kick_cutoff_knob.draw(screen)
 
         snare_attack_knob.draw(screen)
         snare_decay_knob.draw(screen)
         snare_freq_knob.draw(screen)
+        snare_level_knob.draw(screen)
+        snare_cutoff_knob.draw(screen)
 
         hh_attack_knob.draw(screen)
         hh_decay_knob.draw(screen)
         hh_freq_knob.draw(screen)
+        hh_level_knob.draw(screen)
+
+        cymbal_attack_knob.draw(screen)
+        cymbal_decay_knob.draw(screen)
+        cymbal_freq_knob.draw(screen)
+        cymbal_level_knob.draw(screen)
+
+        clap_decay_knob.draw(screen)
+        clap_delay_knob.draw(screen)
+        clap_level_knob.draw(screen)
 
         save_button.draw(screen)
 
