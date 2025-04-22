@@ -29,6 +29,12 @@ class Dial:
         self.font = pygame.font.Font("Poppins-Medium.ttf", size)
         self.text_surface = self.font.render(label, True, self.text_color)
 
+    def init_angle(self, value):
+        self.angle = (value - self.b) / self.a
+        self.prev_angle = self.angle
+        self.x_hand = self.x + math.cos(math.radians(self.angle)) * (self.radius - 5)
+        self.y_hand = self.y + math.sin(math.radians(self.angle)) * (self.radius - 5)
+
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
         pygame.draw.rect(screen, self.color_rect, (self.x_hand, self.y_hand, 3, 3))

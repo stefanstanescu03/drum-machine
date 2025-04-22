@@ -9,6 +9,7 @@ class Cymbal:
         self.sample_rate = sample_rate
         self.duration = duration
         self.amp = 1
+        self.master_amp = 1
         self.freq = 5000
         self.decay = 20
         self.attack = 50
@@ -17,7 +18,7 @@ class Cymbal:
         max_volume = 32767
         inst = generators.generate_cymbal(self.sample_rate,
                                           self.duration,
-                                          self.amp * max_volume,
+                                          self.amp * self.master_amp * max_volume,
                                           self.freq,
                                           self.decay,
                                           self.attack)
@@ -29,7 +30,7 @@ class Cymbal:
         max_volume = 32767
         inst = generators.generate_cymbal(self.sample_rate,
                                           self.duration,
-                                          self.amp * max_volume,
+                                          self.amp * self.master_amp * max_volume,
                                           self.freq,
                                           self.decay,
                                           self.attack)

@@ -9,6 +9,7 @@ class Snare:
         self.sample_rate = sample_rate
         self.duration = duration
         self.amp = 1
+        self.master_amp = 1
         self.freq = 100
         self.decay = 30
         self.attack = 50
@@ -20,7 +21,7 @@ class Snare:
 
         inst = generators.generate_snare(self.sample_rate,
                                          self.duration,
-                                         self.amp * max_volume,
+                                         self.amp * self.master_amp * max_volume,
                                          self.freq,
                                          self.decay,
                                          self.attack)
@@ -34,7 +35,7 @@ class Snare:
 
         inst = generators.generate_snare(self.sample_rate,
                                          self.duration,
-                                         self.amp * max_volume,
+                                         self.amp * self.master_amp * max_volume,
                                          self.freq,
                                          self.decay,
                                          self.attack)
