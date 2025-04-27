@@ -14,6 +14,10 @@ class Snare:
         self.decay = 30
         self.attack = 50
 
+        self.apply_echo = False
+        self.g = 0.5
+        self.d = 0.5
+
         self.cutoff = 20000
 
     def get_raw(self):
@@ -27,6 +31,8 @@ class Snare:
                                          self.attack)
         inst = effects.hard_clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
+        if self.apply_echo:
+            inst = effects.echo(inst, self.sample_rate, self.g, self.d)
         inst = inst.astype(np.int16)
         return inst
 
@@ -41,6 +47,8 @@ class Snare:
                                          self.attack)
         inst = effects.hard_clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
+        if self.apply_echo:
+            inst = effects.echo(inst, self.sample_rate, self.g, self.d)
         inst = inst.astype(np.int16)
         inst = np.repeat(inst.reshape(self.sample_rate, 1), 2, axis=1)
         inst = pygame.sndarray.make_sound(inst)

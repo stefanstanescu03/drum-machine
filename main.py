@@ -76,6 +76,11 @@ def main():
     snare_level_knob.init_angle(snare.amp)
     snare_cutoff_knob = widgets.dial.Dial(430, 120, 20, 55.5, 20, "Cutoff", 10)
     snare_cutoff_knob.init_angle(snare.cutoff)
+    snare_echo_delay_knob = widgets.dial.Dial(320, 240, 20, 0.001, 0.001, "Echo", 10)
+    snare_echo_delay_knob.init_angle(snare.d)
+    snare_echo_feedback_knob = widgets.dial.Dial(375, 240, 20, 0.002, 0.01, "Feedback", 10)
+    snare_echo_feedback_knob.init_angle(snare.g)
+    snare_echo_button = widgets.shape_button.ShapeButton(430, 229, 20, 20, "Echo")
     snare_display = widgets.sound_display.SoundDisplay(snare, "Snare Drum", 300, 50, 150, 30)
 
     hh = core.cymbal.Cymbal(44100, 1)
@@ -87,6 +92,11 @@ def main():
     hh_freq_knob.init_angle(hh.freq)
     hh_level_knob = widgets.dial.Dial(580, 180, 20, 0.02, 0.5, "Level", 10)
     hh_level_knob.init_angle(hh.amp)
+    hh_echo_delay_knob = widgets.dial.Dial(525, 240, 20, 0.001, 0.001, "Echo", 10)
+    hh_echo_delay_knob.init_angle(snare.d)
+    hh_echo_feedback_knob = widgets.dial.Dial(580, 240, 20, 0.002, 0.01, "Feedback", 10)
+    hh_echo_feedback_knob.init_angle(snare.g)
+    hh_echo_button = widgets.shape_button.ShapeButton(635, 229, 20, 20, "Echo")
     hh_display = widgets.sound_display.SoundDisplay(hh, "Hi Hat", 505, 50, 150, 30)
 
     cymbal = core.cymbal.Cymbal(44100, 1)
@@ -100,6 +110,11 @@ def main():
     cymbal_freq_knob.init_angle(cymbal.freq)
     cymbal_level_knob = widgets.dial.Dial(785, 180, 20, 0.02, 0.5, "Level", 10)
     cymbal_level_knob.init_angle(cymbal.amp)
+    cymbal_echo_delay_knob = widgets.dial.Dial(730, 240, 20, 0.001, 0.001, "Echo", 10)
+    cymbal_echo_delay_knob.init_angle(snare.d)
+    cymbal_echo_feedback_knob = widgets.dial.Dial(785, 240, 20, 0.002, 0.01, "Feedback", 10)
+    cymbal_echo_feedback_knob.init_angle(snare.g)
+    cymbal_echo_button = widgets.shape_button.ShapeButton(840, 229, 20, 20, "Echo")
     cymbal_display = widgets.sound_display.SoundDisplay(cymbal, "Cymbal", 710, 50, 150, 30)
 
     clap = core.clap.Clap(44100, 1)
@@ -109,6 +124,13 @@ def main():
     clap_delay_knob.init_angle(clap.delay_interval)
     clap_level_knob = widgets.dial.Dial(935, 180, 20, 0.005, 0.1, "Level", 10)
     clap_level_knob.init_angle(clap.amp)
+    clap_echo_delay_knob = widgets.dial.Dial(935, 240, 20, 0.001, 0.001, "Echo", 10)
+    clap_echo_delay_knob.init_angle(snare.d)
+    clap_echo_feedback_knob = widgets.dial.Dial(990, 240, 20, 0.002, 0.01, "Feedback", 10)
+    clap_echo_feedback_knob.init_angle(snare.g)
+    clap_echo_button = widgets.shape_button.ShapeButton(1054, 229, 20, 20, "Echo")
+    clap_cutoff_knob = widgets.dial.Dial(1045, 120, 20, 55.5, 20, "Cutoff", 10)
+    clap_cutoff_knob.init_angle(snare.cutoff)
     clap_display = widgets.sound_display.SoundDisplay(clap, "Clap", 915, 50, 150, 30)
 
     master_level_knob = widgets.dial.Dial(1150, 120, 30, 0.02, 0.5, "Master", 15)
@@ -154,6 +176,34 @@ def main():
                     else:
                         kick.shape = 2
                     kick_shape_button.change_status()
+
+                if snare_echo_button.check_clicked(event.pos):
+                    if snare.apply_echo is False:
+                        snare.apply_echo = True
+                    else:
+                        snare.apply_echo = False
+                    snare_echo_button.change_status()
+
+                if hh_echo_button.check_clicked(event.pos):
+                    if hh.apply_echo is False:
+                        hh.apply_echo = True
+                    else:
+                        hh.apply_echo = False
+                    hh_echo_button.change_status()
+
+                if cymbal_echo_button.check_clicked(event.pos):
+                    if cymbal.apply_echo is False:
+                        cymbal.apply_echo = True
+                    else:
+                        cymbal.apply_echo = False
+                    cymbal_echo_button.change_status()
+
+                if clap_echo_button.check_clicked(event.pos):
+                    if clap.apply_echo is False:
+                        clap.apply_echo = True
+                    else:
+                        clap.apply_echo = False
+                    clap_echo_button.change_status()
 
                 if bpm_dial.check_clicked(event.pos):
                     bpm_dial.dragging = True
@@ -203,6 +253,14 @@ def main():
                     snare_cutoff_knob.dragging = True
                     snare_cutoff_knob.prev_angle = snare_cutoff_knob.calculate_angle(event.pos[0], event.pos[1])
 
+                if snare_echo_delay_knob.check_clicked(event.pos):
+                    snare_echo_delay_knob.dragging = True
+                    snare_echo_delay_knob.prev_angle = snare_echo_delay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if snare_echo_feedback_knob.check_clicked(event.pos):
+                    snare_echo_feedback_knob.dragging = True
+                    snare_echo_feedback_knob.prev_angle = snare_echo_feedback_knob.calculate_angle(event.pos[0],
+                                                                                                   event.pos[1])
                 if hh_attack_knob.check_clicked(event.pos):
                     hh_attack_knob.dragging = True
                     hh_attack_knob.prev_angle = hh_attack_knob.calculate_angle(event.pos[0], event.pos[1])
@@ -218,6 +276,14 @@ def main():
                 if hh_level_knob.check_clicked(event.pos):
                     hh_level_knob.dragging = True
                     hh_level_knob.prev_angle = hh_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if hh_echo_delay_knob.check_clicked(event.pos):
+                    hh_echo_delay_knob.dragging = True
+                    hh_echo_delay_knob.prev_angle = hh_echo_delay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if hh_echo_feedback_knob.check_clicked(event.pos):
+                    hh_echo_feedback_knob.dragging = True
+                    hh_echo_feedback_knob.prev_angle = hh_echo_feedback_knob.calculate_angle(event.pos[0], event.pos[1])
 
                 if cymbal_attack_knob.check_clicked(event.pos):
                     cymbal_attack_knob.dragging = True
@@ -235,6 +301,16 @@ def main():
                     cymbal_level_knob.dragging = True
                     cymbal_level_knob.prev_angle = cymbal_level_knob.calculate_angle(event.pos[0], event.pos[1])
 
+                if cymbal_echo_delay_knob.check_clicked(event.pos):
+                    cymbal_echo_delay_knob.dragging = True
+                    cymbal_echo_delay_knob.prev_angle = cymbal_echo_delay_knob.calculate_angle(event.pos[0],
+                                                                                               event.pos[1])
+
+                if cymbal_echo_feedback_knob.check_clicked(event.pos):
+                    cymbal_echo_feedback_knob.dragging = True
+                    cymbal_echo_feedback_knob.prev_angle = cymbal_echo_feedback_knob.calculate_angle(event.pos[0],
+                                                                                                     event.pos[1])
+
                 if clap_decay_knob.check_clicked(event.pos):
                     clap_decay_knob.dragging = True
                     clap_decay_knob.prev_angle = clap_decay_knob.calculate_angle(event.pos[0], event.pos[1])
@@ -246,6 +322,19 @@ def main():
                 if clap_level_knob.check_clicked(event.pos):
                     clap_level_knob.dragging = True
                     clap_level_knob.prev_angle = clap_level_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if clap_echo_delay_knob.check_clicked(event.pos):
+                    clap_echo_delay_knob.dragging = True
+                    clap_echo_delay_knob.prev_angle = clap_echo_delay_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if clap_echo_feedback_knob.check_clicked(event.pos):
+                    clap_echo_feedback_knob.dragging = True
+                    clap_echo_feedback_knob.prev_angle = clap_echo_feedback_knob.calculate_angle(event.pos[0],
+                                                                                                 event.pos[1])
+
+                if clap_cutoff_knob.check_clicked(event.pos):
+                    clap_cutoff_knob.dragging = True
+                    clap_cutoff_knob.prev_angle = clap_cutoff_knob.calculate_angle(event.pos[0], event.pos[1])
 
                 if master_level_knob.check_clicked(event.pos):
                     master_level_knob.dragging = True
@@ -341,20 +430,29 @@ def main():
                 snare_freq_knob.dragging = False
                 snare_level_knob.dragging = False
                 snare_cutoff_knob.dragging = False
+                snare_echo_delay_knob.dragging = False
+                snare_echo_feedback_knob.dragging = False
 
                 hh_attack_knob.dragging = False
                 hh_decay_knob.dragging = False
                 hh_freq_knob.dragging = False
                 hh_level_knob.dragging = False
+                hh_echo_delay_knob.dragging = False
+                hh_echo_feedback_knob.dragging = False
 
                 cymbal_attack_knob.dragging = False
                 cymbal_decay_knob.dragging = False
                 cymbal_freq_knob.dragging = False
                 cymbal_level_knob.dragging = False
+                cymbal_echo_delay_knob.dragging = False
+                cymbal_echo_feedback_knob.dragging = False
 
                 clap_decay_knob.dragging = False
                 clap_delay_knob.dragging = False
                 clap_level_knob.dragging = False
+                clap_echo_delay_knob.dragging = False
+                clap_echo_feedback_knob.dragging = False
+                clap_cutoff_knob.dragging = False
 
                 master_level_knob.dragging = False
 
@@ -408,6 +506,14 @@ def main():
             snare_cutoff_knob.drag()
             snare.cutoff = snare_cutoff_knob.get_value()
 
+        if snare_echo_delay_knob.dragging:
+            snare_echo_delay_knob.drag()
+            snare.d = snare_echo_delay_knob.get_value()
+
+        if snare_echo_feedback_knob.dragging:
+            snare_echo_feedback_knob.drag()
+            snare.g = snare_echo_feedback_knob.get_value()
+
         if hh_attack_knob.dragging:
             hh_attack_knob.drag()
             hh.attack = hh_attack_knob.get_value()
@@ -423,6 +529,14 @@ def main():
         if hh_level_knob.dragging:
             hh_level_knob.drag()
             hh.amp = hh_level_knob.get_value()
+
+        if hh_echo_delay_knob.dragging:
+            hh_echo_delay_knob.drag()
+            hh.d = hh_echo_delay_knob.get_value()
+
+        if hh_echo_feedback_knob.dragging:
+            hh_echo_feedback_knob.drag()
+            hh.g = hh_echo_feedback_knob.get_value()
 
         if cymbal_attack_knob.dragging:
             cymbal_attack_knob.drag()
@@ -440,6 +554,14 @@ def main():
             cymbal_level_knob.drag()
             cymbal.amp = cymbal_level_knob.get_value()
 
+        if cymbal_echo_delay_knob.dragging:
+            cymbal_echo_delay_knob.drag()
+            cymbal.d = cymbal_echo_delay_knob.get_value()
+
+        if cymbal_echo_feedback_knob.dragging:
+            cymbal_echo_feedback_knob.drag()
+            cymbal.g = cymbal_echo_feedback_knob.get_value()
+
         if clap_decay_knob.dragging:
             clap_decay_knob.drag()
             clap.decay = clap_decay_knob.get_value()
@@ -451,6 +573,18 @@ def main():
         if clap_level_knob.dragging:
             clap_level_knob.drag()
             clap.amp = clap_level_knob.get_value()
+
+        if clap_echo_delay_knob.dragging:
+            clap_echo_delay_knob.drag()
+            clap.d = clap_echo_delay_knob.get_value()
+
+        if clap_echo_feedback_knob.dragging:
+            clap_echo_feedback_knob.drag()
+            clap.g = clap_echo_feedback_knob.get_value()
+
+        if clap_cutoff_knob.dragging:
+            clap_cutoff_knob.drag()
+            clap.cutoff = clap_cutoff_knob.get_value()
 
         if master_level_knob.dragging:
             master_level_knob.drag()
@@ -487,20 +621,33 @@ def main():
         snare_freq_knob.draw(screen)
         snare_level_knob.draw(screen)
         snare_cutoff_knob.draw(screen)
+        snare_echo_delay_knob.draw(screen)
+        snare_echo_feedback_knob.draw(screen)
+        snare_echo_button.draw(screen)
 
         hh_attack_knob.draw(screen)
         hh_decay_knob.draw(screen)
         hh_freq_knob.draw(screen)
         hh_level_knob.draw(screen)
+        hh_echo_delay_knob.draw(screen)
+        hh_echo_feedback_knob.draw(screen)
+        hh_echo_button.draw(screen)
 
         cymbal_attack_knob.draw(screen)
         cymbal_decay_knob.draw(screen)
         cymbal_freq_knob.draw(screen)
         cymbal_level_knob.draw(screen)
+        cymbal_echo_delay_knob.draw(screen)
+        cymbal_echo_feedback_knob.draw(screen)
+        cymbal_echo_button.draw(screen)
 
         clap_decay_knob.draw(screen)
         clap_delay_knob.draw(screen)
         clap_level_knob.draw(screen)
+        clap_echo_delay_knob.draw(screen)
+        clap_echo_feedback_knob.draw(screen)
+        clap_echo_button.draw(screen)
+        clap_cutoff_knob.draw(screen)
 
         master_level_knob.draw(screen)
 
