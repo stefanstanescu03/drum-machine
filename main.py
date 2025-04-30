@@ -143,6 +143,10 @@ def main():
     strip = widgets.numbers_strip.NumbersStrip(95, 560, 1100, 25, 17)
 
     save_button = widgets.action_button.ActionButton(375, 400, 50, 50, "Save")
+    play_button = widgets.action_button.ActionButton(445, 400, 50, 50, "Play")
+
+    playing = False
+    sound = None
 
     delimiters = []
     padding = 280
@@ -151,6 +155,7 @@ def main():
 
     running = True
     while running:
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -167,6 +172,18 @@ def main():
                 if save_button.check_clicked(event.pos):
                     try:
                         seq.export_pattern("demo.wav", 44100)
+                    except Exception as e:
+                        print(e)
+
+                if play_button.check_clicked(event.pos):
+                    try:
+                        if not playing:
+                            sound = seq.get_sound(44100)
+                            sound.play(loops=-1)
+                            playing = True
+                        else:
+                            sound.stop()
+                            playing = False
                     except Exception as e:
                         print(e)
 
@@ -652,6 +669,7 @@ def main():
         master_level_knob.draw(screen)
 
         save_button.draw(screen)
+        play_button.draw(screen)
 
         strip.draw(screen)
 
