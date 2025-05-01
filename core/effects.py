@@ -3,8 +3,9 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 import math
 
-def clip(sound):
+def clip(sound, max_volume):
     clipped_sound = []
+    sound = sound / max_volume
     for sample in sound:
         if sample >= 1:
             clipped_sound.append(2 / 3)
@@ -13,6 +14,7 @@ def clip(sound):
         if -1 < sample < 1:
             clipped_sound.append(sample - sample**3  / 3)
     clipped_sound = np.array(clipped_sound)
+    clipped_sound = (max_volume * clipped_sound).astype(np.int16)
     return clipped_sound
 
 def hard_clip(sound, head_room):

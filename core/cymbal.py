@@ -26,7 +26,7 @@ class Cymbal:
                                           self.freq,
                                           self.decay,
                                           self.attack)
-        inst = effects.hard_clip(inst, max_volume).astype(np.int16)
+        inst = effects.clip(inst, max_volume).astype(np.int16)
         if self.apply_echo:
             inst = effects.echo(inst, self.sample_rate, self.g, self.d)
         inst.astype(np.int16)
@@ -41,7 +41,7 @@ class Cymbal:
                                           self.freq,
                                           self.decay,
                                           self.attack)
-        inst = effects.hard_clip(inst, max_volume).astype(np.int16)
+        inst = effects.clip(inst, max_volume).astype(np.int16)
         if self.apply_echo:
             inst = effects.echo(inst, self.sample_rate, self.g, self.d)
         inst.astype(np.int16)

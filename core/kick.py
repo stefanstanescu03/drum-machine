@@ -31,7 +31,7 @@ class Kick:
                                         self.time,
                                         self.shape)
 
-        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
         inst = inst.astype(np.int16)
 
@@ -49,7 +49,7 @@ class Kick:
                                         self.time,
                                         self.shape)
 
-        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
         inst = inst.astype(np.int16)
 

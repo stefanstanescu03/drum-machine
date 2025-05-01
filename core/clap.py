@@ -29,7 +29,7 @@ class Clap:
                                         self.decay,
                                         self.num_claps,
                                         self.delay_interval).astype(np.int16)
-        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
         if self.apply_echo:
             inst = effects.echo(inst, self.sample_rate, self.g, self.d)
@@ -45,7 +45,7 @@ class Clap:
                                         self.decay,
                                         self.num_claps,
                                         self.delay_interval).astype(np.int16)
-        inst = effects.hard_clip(inst, max_volume)
+        inst = effects.clip(inst, max_volume)
         inst = effects.low_pass_filter(inst, self.cutoff, self.sample_rate)
         if self.apply_echo:
             inst = effects.echo(inst, self.sample_rate, self.g, self.d)
