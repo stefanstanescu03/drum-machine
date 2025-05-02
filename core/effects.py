@@ -48,6 +48,28 @@ def echo(sound, sample_rate, g, delay):
     return final_sound
 
 
+def dynamic_compressor(sound, threshold, ratio, makeup_gain):
+    sound = sound / 32768.0
+    final_sound = np.zeros(len(sound))
+
+    for n in range(0, len(sound)):
+        if sound[n] > threshold:
+            final_sound[n] = (sound[n] - threshold) / ratio + threshold
+        elif sound[n] < -threshold:
+            final_sound[n] = (sound[n] + threshold) / ratio - threshold
+        else:
+            final_sound[n] = sound[n]
+
+    final_sound *= makeup_gain
+    final_sound *= 32768.0
+    final_sound = clip(final_sound, 32768)
+    return final_sound
+
+
+def normalize(sound, max_volume):
+    return np.int16(sound / np.max(np.abs(sound)) * max_volume)
+
+
 def low_pass_filter(sound, freq, sample_rate):
     normal_cutoff = freq / (sample_rate * 0.5)
     b, a = signal.butter(2, normal_cutoff, 'low')

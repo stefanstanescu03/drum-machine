@@ -58,7 +58,7 @@ def main():
     kick_time_knob.init_angle(kick.time)
     kick_freq_knob = widgets.dial.Dial(170, 180, 20, 0.2, 30, "Tone", 10)
     kick_freq_knob.init_angle(kick.freq)
-    kick_level_knob = widgets.dial.Dial(115, 240, 20, 0.02, 0.5, "Level", 10)
+    kick_level_knob = widgets.dial.Dial(115, 240, 20, 0.005, 0.2, "Level", 10)
     kick_level_knob.init_angle(kick.amp)
     kick_cutoff_knob = widgets.dial.Dial(170, 240, 20, 55.5, 20, "Cutoff", 10)
     kick_cutoff_knob.init_angle(kick.cutoff)
@@ -72,7 +72,7 @@ def main():
     snare_decay_knob.init_angle(snare.decay)
     snare_freq_knob = widgets.dial.Dial(320, 180, 20, 0.3, 80, "Tone", 10)
     snare_freq_knob.init_angle(snare.freq)
-    snare_level_knob = widgets.dial.Dial(375, 180, 20, 0.02, 0.5, "Level", 10)
+    snare_level_knob = widgets.dial.Dial(375, 180, 20, 0.005, 0.2, "Level", 10)
     snare_level_knob.init_angle(snare.amp)
     snare_cutoff_knob = widgets.dial.Dial(430, 120, 20, 55.5, 20, "Cutoff", 10)
     snare_cutoff_knob.init_angle(snare.cutoff)
@@ -90,7 +90,7 @@ def main():
     hh_decay_knob.init_angle(hh.decay)
     hh_freq_knob = widgets.dial.Dial(525, 180, 20, 11, 2000, "Tone", 10)
     hh_freq_knob.init_angle(hh.freq)
-    hh_level_knob = widgets.dial.Dial(580, 180, 20, 0.02, 0.5, "Level", 10)
+    hh_level_knob = widgets.dial.Dial(580, 180, 20, 0.005, 0.2, "Level", 10)
     hh_level_knob.init_angle(hh.amp)
     hh_echo_delay_knob = widgets.dial.Dial(525, 240, 20, 0.001, 0.001, "Echo", 10)
     hh_echo_delay_knob.init_angle(snare.d)
@@ -108,7 +108,7 @@ def main():
     cymbal_decay_knob.init_angle(cymbal.decay)
     cymbal_freq_knob = widgets.dial.Dial(730, 180, 20, 11, 2000, "Tone", 10)
     cymbal_freq_knob.init_angle(cymbal.freq)
-    cymbal_level_knob = widgets.dial.Dial(785, 180, 20, 0.02, 0.5, "Level", 10)
+    cymbal_level_knob = widgets.dial.Dial(785, 180, 20, 0.005, 0.2, "Level", 10)
     cymbal_level_knob.init_angle(cymbal.amp)
     cymbal_echo_delay_knob = widgets.dial.Dial(730, 240, 20, 0.001, 0.001, "Echo", 10)
     cymbal_echo_delay_knob.init_angle(snare.d)
@@ -122,7 +122,7 @@ def main():
     clap_decay_knob.init_angle(clap.decay)
     clap_delay_knob = widgets.dial.Dial(990, 120, 20, 0.12, 5, "Delay", 10)
     clap_delay_knob.init_angle(clap.delay_interval)
-    clap_level_knob = widgets.dial.Dial(935, 180, 20, 0.005, 0.1, "Level", 10)
+    clap_level_knob = widgets.dial.Dial(935, 180, 20, 0.002, 0.01, "Level", 10)
     clap_level_knob.init_angle(clap.amp)
     clap_echo_delay_knob = widgets.dial.Dial(935, 240, 20, 0.001, 0.001, "Echo", 10)
     clap_echo_delay_knob.init_angle(snare.d)
@@ -133,12 +133,26 @@ def main():
     clap_cutoff_knob.init_angle(snare.cutoff)
     clap_display = widgets.sound_display.SoundDisplay(clap, "Clap", 915, 50, 150, 30)
 
-    master_level_knob = widgets.dial.Dial(1150, 120, 30, 0.02, 0.5, "Master", 15)
-    master_level_knob.init_angle(1)
-
     kick_display.change_status()
     selected_sound = 0
     seq = Sequencer(bpm, hh, kick, snare, cymbal, clap)
+
+    # 0.2 -> 2
+    comp_gain_knob = widgets.dial.Dial(1150, 120, 25, 0.005, 0.2, "Gain", 15)
+    comp_gain_knob.init_angle(seq.compressor_mg)
+
+    # 0.2 -> 1
+    comp_threshold_knob = widgets.dial.Dial(1150, 200, 25, 0.002, 0.2, "Threshold", 15)
+    comp_threshold_knob.init_angle(seq.compressor_t)
+
+    # 1 -> 12
+    comp_ratio_knob = widgets.dial.Dial(1150, 280, 25, 0.03, 1, "Ratio", 15)
+    comp_ratio_knob.init_angle(seq.compressor_r)
+
+    # 0 -> 0.5
+    swing_knob = widgets.dial.Dial(610, 425, 20, 0.001, 0, "Amount", 10)
+    swing_knob.init_angle(seq.swing_amount)
+    swing_button = widgets.shape_button.ShapeButton(670, 418, 20, 20, "Swing")
 
     strip = widgets.numbers_strip.NumbersStrip(95, 560, 1100, 25, 17)
 
@@ -155,7 +169,6 @@ def main():
 
     running = True
     while running:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -167,11 +180,10 @@ def main():
                             seq.add_sound(button.id, selected_sound)
                         else:
                             seq.remove_sound(button.id, selected_sound)
-                        print(seq.pattern[selected_sound])
 
                 if save_button.check_clicked(event.pos):
                     try:
-                        seq.export_pattern("demo.wav", 44100)
+                        seq.export_pattern(44100)
                     except Exception as e:
                         print(e)
 
@@ -193,6 +205,13 @@ def main():
                     else:
                         kick.shape = 2
                     kick_shape_button.change_status()
+
+                if swing_button.check_clicked(event.pos):
+                    if seq.apply_swing is False:
+                        seq.apply_swing = True
+                    else:
+                        seq.apply_swing = False
+                    swing_button.change_status()
 
                 if snare_echo_button.check_clicked(event.pos):
                     if snare.apply_echo is False:
@@ -225,6 +244,10 @@ def main():
                 if bpm_dial.check_clicked(event.pos):
                     bpm_dial.dragging = True
                     bpm_dial.prev_angle = bpm_dial.calculate_angle(event.pos[0], event.pos[1])
+
+                if swing_knob.check_clicked(event.pos):
+                    swing_knob.dragging = True
+                    swing_knob.prev_angle = swing_knob.calculate_angle(event.pos[0], event.pos[1])
 
                 if kick_attack_knob.check_clicked(event.pos):
                     kick_attack_knob.dragging = True
@@ -353,9 +376,17 @@ def main():
                     clap_cutoff_knob.dragging = True
                     clap_cutoff_knob.prev_angle = clap_cutoff_knob.calculate_angle(event.pos[0], event.pos[1])
 
-                if master_level_knob.check_clicked(event.pos):
-                    master_level_knob.dragging = True
-                    master_level_knob.prev_angle = master_level_knob.calculate_angle(event.pos[0], event.pos[1])
+                if comp_gain_knob.check_clicked(event.pos):
+                    comp_gain_knob.dragging = True
+                    comp_gain_knob.prev_angle = comp_gain_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if comp_threshold_knob.check_clicked(event.pos):
+                    comp_threshold_knob.dragging = True
+                    comp_threshold_knob.prev_angle = comp_threshold_knob.calculate_angle(event.pos[0], event.pos[1])
+
+                if comp_ratio_knob.check_clicked(event.pos):
+                    comp_ratio_knob.dragging = True
+                    comp_ratio_knob.prev_angle = comp_ratio_knob.calculate_angle(event.pos[0], event.pos[1])
 
                 if kick_display.check_clicked(event.pos):
                     kick_display.play_sample()
@@ -434,6 +465,7 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 bpm_dial.dragging = False
+                swing_knob.dragging = False
 
                 kick_attack_knob.dragging = False
                 kick_decay_knob.dragging = False
@@ -471,13 +503,19 @@ def main():
                 clap_echo_feedback_knob.dragging = False
                 clap_cutoff_knob.dragging = False
 
-                master_level_knob.dragging = False
+                comp_gain_knob.dragging = False
+                comp_threshold_knob.dragging = False
+                comp_ratio_knob.dragging = False
 
         if bpm_dial.dragging:
             bpm_dial.drag()
             bpm = bpm_dial.get_value()
             tempo_display.set_text(str(int(bpm)))
             seq.bpm = bpm
+
+        if swing_knob.dragging:
+            swing_knob.drag()
+            seq.swing_amount = swing_knob.get_value()
 
         if kick_attack_knob.dragging:
             kick_attack_knob.drag()
@@ -603,13 +641,17 @@ def main():
             clap_cutoff_knob.drag()
             clap.cutoff = clap_cutoff_knob.get_value()
 
-        if master_level_knob.dragging:
-            master_level_knob.drag()
-            kick.master_amp = master_level_knob.get_value()
-            snare.master_amp = master_level_knob.get_value()
-            hh.master_amp = master_level_knob.get_value()
-            cymbal.master_amp = master_level_knob.get_value()
-            clap.master_amp = master_level_knob.get_value()
+        if comp_gain_knob.dragging:
+            comp_gain_knob.drag()
+            seq.compressor_mg = comp_gain_knob.get_value()
+
+        if comp_threshold_knob.dragging:
+            comp_threshold_knob.drag()
+            seq.compressor_t = comp_threshold_knob.get_value()
+
+        if comp_ratio_knob.dragging:
+            comp_ratio_knob.drag()
+            seq.compressor_r = comp_ratio_knob.get_value()
 
         screen.fill(background_color)
 
@@ -617,6 +659,8 @@ def main():
             button.draw(screen)
 
         tempo_display.draw(screen)
+        swing_knob.draw(screen)
+        swing_button.draw(screen)
 
         bpm_dial.draw(screen)
         kick_display.draw(screen)
@@ -666,7 +710,9 @@ def main():
         clap_echo_button.draw(screen)
         clap_cutoff_knob.draw(screen)
 
-        master_level_knob.draw(screen)
+        comp_gain_knob.draw(screen)
+        comp_threshold_knob.draw(screen)
+        comp_ratio_knob.draw(screen)
 
         save_button.draw(screen)
         play_button.draw(screen)

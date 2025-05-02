@@ -9,7 +9,6 @@ class Clap:
         self.sample_rate = sample_rate
         self.duration = duration
         self.amp = 0.2
-        self.master_amp = 1
         self.decay = 20
         self.num_claps = 3
         self.delay_interval = 50
@@ -25,7 +24,7 @@ class Clap:
 
         inst = generators.generate_clap(self.sample_rate,
                                         self.duration,
-                                        self.amp * self.master_amp * max_volume,
+                                        self.amp * max_volume,
                                         self.decay,
                                         self.num_claps,
                                         self.delay_interval).astype(np.int16)
@@ -41,7 +40,7 @@ class Clap:
 
         inst = generators.generate_clap(self.sample_rate,
                                         self.duration,
-                                        self.amp * self.master_amp * max_volume,
+                                        self.amp * max_volume,
                                         self.decay,
                                         self.num_claps,
                                         self.delay_interval).astype(np.int16)

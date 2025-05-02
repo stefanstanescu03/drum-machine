@@ -9,7 +9,6 @@ class Kick:
         self.sample_rate = sample_rate
         self.duration = duration
         self.amp = 1
-        self.master_amp = 1
         self.freq = 40
         self.high_freq = 100
         self.decay = 10
@@ -23,7 +22,7 @@ class Kick:
         max_volume = 32767
         inst = generators.generate_kick(self.sample_rate,
                                         self.duration,
-                                        self.amp * self.master_amp * max_volume,
+                                        self.amp * max_volume,
                                         self.freq,
                                         self.high_freq,
                                         self.decay,
@@ -41,7 +40,7 @@ class Kick:
         max_volume = 32767
         inst = generators.generate_kick(self.sample_rate,
                                         self.duration,
-                                        self.amp * self.master_amp * max_volume,
+                                        self.amp * max_volume,
                                         self.freq,
                                         self.high_freq,
                                         self.decay,

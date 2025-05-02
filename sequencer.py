@@ -1,9 +1,10 @@
 import numpy as np
-import time
 import pygame
-import matplotlib.pyplot as plt
 from scipy.io.wavfile import write
+import core.effects as effects
 
+import tkinter as tk
+from tkinter import filedialog
 
 class Sequencer:
     def __init__(self, bpm, hat, kick, snare, open_hat, clap):
@@ -21,36 +22,18 @@ class Sequencer:
         self.open_hat_channel = pygame.mixer.Channel(3)
         self.clap_channel = pygame.mixer.Channel(4)
 
+        self.compressor_t = 0.9
+        self.compressor_r = 1
+        self.compressor_mg = 1
+
+        self.swing_amount = 0.2
+        self.apply_swing = False
+
     def add_sound(self, position, lane):
         self.pattern[lane][position] = 1
 
     def remove_sound(self, position, lane):
         self.pattern[lane][position] = 0
-
-    # def play(self):
-    #
-    #     step_time = 15.0 / self.bpm
-    #     last_time = pygame.time.get_ticks()
-    #
-    #     for j in range(0, len(self.pattern[0])):
-    #         current_time = pygame.time.get_ticks()
-    #         elapsed_time = (current_time - last_time) / 1000.0
-    #
-    #         if elapsed_time < step_time:
-    #             pygame.time.delay(int((step_time - elapsed_time) * 1000))
-    #
-    #         last_time = pygame.time.get_ticks()
-    #
-    #         if self.pattern[0][j]:
-    #             self.kick_channel.play(self.kick.get_sound(), fade_ms=0)
-    #         if self.pattern[1][j]:
-    #             self.snare_channel.play(self.snare.get_sound(), fade_ms=0)
-    #         if self.pattern[2][j]:
-    #             self.hat_channel.play(self.hat.get_sound(), fade_ms=0)
-    #         if self.pattern[3][j]:
-    #             self.open_hat_channel.play(self.open_hat.get_sound(), fade_ms=0)
-    #         if self.pattern[4][j]:
-    #             self.clap_channel.play(self.clap.get_sound(), fade_ms=0)
 
     def generate_raw(self, sample_rate):
         exported_pattern = np.zeros(int(sample_rate * 240 / self.bpm))
@@ -63,40 +46,55 @@ class Sequencer:
 
         for j in range(0, len(self.pattern[0])):
             if self.pattern[0][j]:
+                start = int(j * sample_rate * 15 / self.bpm)
+                if j % 2 == 1 and self.apply_swing:
+                    start += int(sample_rate * self.swing_amount * 15 / self.bpm)
                 for index, sample in enumerate(kick_array):
-                    index_in_export = int(j * sample_rate * 15 / self.bpm) + index
+                    index_in_export = start + index
                     if index_in_export < len(exported_pattern):
                         exported_pattern[index_in_export] += sample
                     else:
                         break
 
             if self.pattern[1][j]:
+                start = int(j * sample_rate * 15 / self.bpm)
+                if j % 2 == 1 and self.apply_swing:
+                    start += int(sample_rate * self.swing_amount * 15 / self.bpm)
                 for index, sample in enumerate(snare_array):
-                    index_in_export = int(j * sample_rate * 15 / self.bpm) + index
+                    index_in_export = start + index
                     if index_in_export < len(exported_pattern):
                         exported_pattern[index_in_export] += sample
                     else:
                         break
 
             if self.pattern[2][j]:
+                start = int(j * sample_rate * 15 / self.bpm)
+                if j % 2 == 1 and self.apply_swing:
+                    start += int(sample_rate * self.swing_amount * 15 / self.bpm)
                 for index, sample in enumerate(hat_array):
-                    index_in_export = int(j * sample_rate * 15 / self.bpm) + index
+                    index_in_export = start + index
                     if index_in_export < len(exported_pattern):
                         exported_pattern[index_in_export] += sample
                     else:
                         break
 
             if self.pattern[3][j]:
+                start = int(j * sample_rate * 15 / self.bpm)
+                if j % 2 == 1 and self.apply_swing:
+                    start += int(sample_rate * self.swing_amount * 15 / self.bpm)
                 for index, sample in enumerate(open_hat_array):
-                    index_in_export = int(j * sample_rate * 15 / self.bpm) + index
+                    index_in_export = start + index
                     if index_in_export < len(exported_pattern):
                         exported_pattern[index_in_export] += sample
                     else:
                         break
 
             if self.pattern[4][j]:
+                start = int(j * sample_rate * 15 / self.bpm)
+                if j % 2 == 1 and self.apply_swing:
+                    start += int(sample_rate * self.swing_amount * 15 / self.bpm)
                 for index, sample in enumerate(clap_array):
-                    index_in_export = int(j * sample_rate * 15 / self.bpm) + index
+                    index_in_export = start + index
                     if index_in_export < len(exported_pattern):
                         exported_pattern[index_in_export] += sample
                     else:
@@ -105,12 +103,28 @@ class Sequencer:
         scaled = np.int16(exported_pattern / np.max(np.abs(exported_pattern)) * 32767)
         return scaled
 
-    def export_pattern(self, filename, sample_rate):
+    def export_pattern(self, sample_rate):
         sound = self.generate_raw(sample_rate)
-        write(filename, sample_rate, sound)
+        sound = effects.dynamic_compressor(sound, self.compressor_t, self.compressor_r, self.compressor_mg)
+        sound = effects.normalize(sound, 32767)
+
+        root = tk.Tk()
+        root.withdraw()
+
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".wav",
+            filetypes=[("WAV files", "*.wav")],
+            title="Save your sound as..."
+        )
+
+        if filename:
+            write(filename, sample_rate, sound)
+
 
     def get_sound(self, sample_rate):
         sound = self.generate_raw(sample_rate)
+        sound = effects.dynamic_compressor(sound, self.compressor_t, self.compressor_r, self.compressor_mg)
+        sound = effects.normalize(sound, 32767)
         sound = np.repeat(sound[:, np.newaxis], 2, axis=1)
         sound = pygame.sndarray.make_sound(sound)
         return sound
