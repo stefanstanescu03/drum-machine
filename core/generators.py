@@ -46,7 +46,7 @@ def generate_snare(sample_rate, duration, amp, freq, decay, attack):
     for i in range(num_samples):
         tail = math.exp(-decay * i / sample_rate)
         transient = (1 - math.exp(-attack * i / sample_rate))
-        sample = amp * math.sin(2 * freq * math.pi * i / sample_rate) * tail * transient
+        sample = amp * triangle_wave(2 * freq * math.pi * i / sample_rate) * tail * transient
         drum.append(sample)
 
     snare = (noise + drum)

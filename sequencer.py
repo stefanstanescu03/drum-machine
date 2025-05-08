@@ -1,7 +1,8 @@
 import numpy as np
 import pygame
-from scipy.io.wavfile import write
+# from scipy.io.wavfile import write
 import core.effects as effects
+from pydub import AudioSegment # trebuie sa instalezi audioop-lts ca sa mearga
 
 import tkinter as tk
 from tkinter import filedialog
@@ -16,11 +17,11 @@ class Sequencer:
         self.open_hat = open_hat
         self.clap = clap
 
-        self.kick_channel = pygame.mixer.Channel(0)
-        self.snare_channel = pygame.mixer.Channel(1)
-        self.hat_channel = pygame.mixer.Channel(2)
-        self.open_hat_channel = pygame.mixer.Channel(3)
-        self.clap_channel = pygame.mixer.Channel(4)
+        # self.kick_channel = pygame.mixer.Channel(0)
+        # self.snare_channel = pygame.mixer.Channel(1)
+        # self.hat_channel = pygame.mixer.Channel(2)
+        # self.open_hat_channel = pygame.mixer.Channel(3)
+        # self.clap_channel = pygame.mixer.Channel(4)
 
         self.compressor_t = 0.9
         self.compressor_r = 1
@@ -108,17 +109,28 @@ class Sequencer:
         sound = effects.dynamic_compressor(sound, self.compressor_t, self.compressor_r, self.compressor_mg)
         sound = effects.normalize(sound, 32767)
 
+        sound = sound.astype(np.int16).tobytes()
+
         root = tk.Tk()
         root.withdraw()
 
         filename = filedialog.asksaveasfilename(
             defaultextension=".wav",
-            filetypes=[("WAV files", "*.wav")],
-            title="Save your sound as..."
+            filetypes=[("WAV", "*.wav"),
+                       ("MP3", "*.mp3"),
+                       ("FLAC", "*.flac")],
+            title="Export your sequence"
         )
 
         if filename:
-            write(filename, sample_rate, sound)
+            ext = filename.split('.')[-1].lower()
+            audio = AudioSegment(
+                sound,
+                frame_rate=sample_rate,
+                sample_width=2,
+                channels=1
+            )
+            audio.export(filename, format=ext)
 
 
     def get_sound(self, sample_rate):

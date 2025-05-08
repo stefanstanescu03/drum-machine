@@ -1,7 +1,5 @@
 import numpy as np
 import scipy.signal as signal
-import matplotlib.pyplot as plt
-import math
 
 def clip(sound, max_volume):
     clipped_sound = []
